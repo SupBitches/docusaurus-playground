@@ -1,0 +1,126 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "Phoenix Partner API",
+    "description": "The Phoenix Partner API provides integration endpoints for partner systems.\r\nUse this documentation to explore available operations, authenticate via OAuth2, and test requests directly. Ben was ere.",
+    "version": "v1"
+  },
+  "paths": {
+    "/queries/ping": {
+      "get": {
+        "tags": [
+          "Phoenix.Partner.Api"
+        ],
+        "summary": "A ping endpoint that returns a pong message",
+        "description": "This endpoint allows you to ping the api and get back a pong message.\r\n## Usage Example\r\n\r\n```\r\nGET /queries/ping\r\n```\r\n\r\n### Response\r\n\r\n```json\r\n{\r\n  \"reply\": \"pong\"\r\n}\r\n```\r\n\r\n## C# Client Example\r\n\r\n```csharp\r\nusing var httpClient = new HttpClient();\r\nhttpClient.BaseAddress = new Uri(\"https://your-api-host\");\r\n\r\nvar response = await httpClient.GetFromJsonAsync<PingResponse>(\r\n    \"/queries/ping\");\r\nConsole.WriteLine(response.Reply); // Output: pong\r\n\r\npublic record PingResponse(string Reply);\r\n```\r\n\r\n## Python Client Example\r\n```python\r\nimport requests\r\n\r\nresponse = requests.get(\"https://your-api-host/queries/ping\")\r\ndata = response.json()\r\nprint(data[\"reply\"])  # Output: pong\r\n```",
+        "operationId": "Ping",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PingEndpoint_Response"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/queries/sample": {
+      "get": {
+        "tags": [
+          "Sample"
+        ],
+        "summary": "A sample endpoint that returns a greeting message and the current UTC timestamp",
+        "description": "This endpoint allows you to request a greeting message. It accepts an optional name parameter\r\nand returns a greeting message along with the current UTC timestamp. It requires authorization and is\r\n\r\n## Usage Example\r\n\r\n```\r\nGET /queries/sample?Name=Alice\r\n```\r\n\r\n### Response\r\n\r\n```json\r\n{\r\n  \"message\": \"Hello, Alice!\",\r\n  \"timestampUtc\": \"2025-01-15T10:30:00+00:00\"\r\n}\r\n```\r\n\r\nIf no name is provided, the response defaults to \"Hello, world!\".\r\n\r\n## C# Client Example\r\n\r\n```csharp\r\nusing var httpClient = new HttpClient();\r\nhttpClient.BaseAddress = new Uri(\"https://your-api-host\");\r\nhttpClient.DefaultRequestHeaders.Authorization =\r\n    new AuthenticationHeaderValue(\"Bearer\", accessToken);\r\n\r\nvar response = await httpClient.GetFromJsonAsync<SampleResponse>(\r\n    \"/queries/sample?Name=Alice\");\r\n\r\nConsole.WriteLine(response?.Message); // \"Hello, Alice!\"\r\n\r\npublic record SampleResponse(string Message, DateTimeOffset TimestampUtc);\r\n```\r\n\r\n## Python Client Example\r\n\r\n```python\r\nimport requests\r\n\r\nheaders = {\"Authorization\": f\"Bearer {access_token}\"}\r\nresponse = requests.get(\r\n    \"https://your-api-host/queries/sample\",\r\n    params={\"Name\": \"Alice\"},\r\n    headers=headers,\r\n)\r\ndata = response.json()\r\nprint(data[\"message\"])        # Hello, Alice!\r\nprint(data[\"timestampUtc\"])   # 2025-01-15T10:30:00+00:00\r\n```\r\n\r\n",
+        "operationId": "Sample",
+        "parameters": [
+          {
+            "name": "Name",
+            "in": "query",
+            "description": "The name of the person to greet. If omitted, defaults to 'world'.",
+            "schema": {
+              "type": "string",
+              "description": "The name of the person to greet. If omitted, defaults to 'world'."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SampleEndpoint_Response"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PingEndpoint_Response": {
+        "required": [
+          "reply"
+        ],
+        "type": "object",
+        "properties": {
+          "reply": {
+            "type": "string",
+            "description": "The reply message from the ping endpoint, this will be 'pong'"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SampleEndpoint_Response": {
+        "required": [
+          "message",
+          "timestampUtc"
+        ],
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "The personalised greeting message"
+          },
+          "timestampUtc": {
+            "type": "string",
+            "description": "The UTC timestamp when the response was generated",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "OAuth2": {
+        "type": "oauth2",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://login.microsoftonline.com/2d309e52-cf63-42e5-af92-33efc9f0c4dd/oauth2/v2.0/authorize",
+            "tokenUrl": "https://login.microsoftonline.com/2d309e52-cf63-42e5-af92-33efc9f0c4dd/oauth2/v2.0/token",
+            "scopes": {}
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "OAuth2": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Phoenix.Partner.Api"
+    },
+    {
+      "name": "Sample"
+    }
+  ]
+}
